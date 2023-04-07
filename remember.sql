@@ -233,3 +233,11 @@ CASE
 END
 FROM superheroes
 WHERE superheroes.id = superpowers.superhero_id;
+
+
+DROP TABLE orders;
+DROP TABLE customers;
+DROP TABLE products;
+
+DROP TABLE superpowers;
+DROP TABLE superheroes;
