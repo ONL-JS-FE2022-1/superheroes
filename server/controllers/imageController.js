@@ -21,7 +21,7 @@ module.exports.addHeroImages = async(req, res, next) => {
     try {
         const {params: {heroId}, files} = req;
 
-        const images = files.map(file => ({path: file, heroId}));
+        const images = files.map(file => ({path: file.filename, heroId}));
         const newImages = await Image.bulkCreate(images, {returning: true});
 
         res.status(201).send({data: newImages});

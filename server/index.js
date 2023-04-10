@@ -5,5 +5,5 @@ const {PORT} = require('./config');
 const server = http.createServer(app);
 
 server.listen(PORT, () => {
-    `Server started on ${PORT}`
+    console.log(`Server started on ${PORT}`)
 });
