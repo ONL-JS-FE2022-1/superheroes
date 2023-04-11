@@ -17,7 +17,7 @@ const Hero = ({ hero }) => {
         <article>
             <h1>{hero.nickname}</h1>
             <h2>Also known as {hero.realName}</h2>
-            <Slider {...settings}>
+            <Slider {...settings} style={{width: "20%", margin: "30px"}}>
                 {hero.images.map((image) => (
                     <img
                         key={image.id}
