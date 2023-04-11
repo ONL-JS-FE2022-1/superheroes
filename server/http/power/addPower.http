@@ -1,0 +1,6 @@
+POST http://localhost:5000/api/superheroes/1/powers HTTP/1.1
+Content-Type: application/json
+
+{
+    "powers": ["test-power-1", "test-power-2"]
+}

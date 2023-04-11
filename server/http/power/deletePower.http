@@ -1,0 +1,1 @@
+DELETE http://localhost:5000/api/superheroes/1/powers/3 HTTP/1.1
