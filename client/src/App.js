@@ -1,5 +1,8 @@
+import HeroesPage from "./pages/HeroesPage";
+
 function App() {
   return (
+    <HeroesPage />
   );
 }
 
