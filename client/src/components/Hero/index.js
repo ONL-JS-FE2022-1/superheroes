@@ -3,14 +3,25 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from './Hero.module.css';
+import { deleteHero } from '../../api';
+import { getHeroes } from '../../redux/slices/heroSlice';
+import { useDispatch } from 'react-redux';
+
 
 const Hero = ({ hero }) => {
+    const dispatch = useDispatch();
+
     const settings = {
         dots: true,
         infinite: true,
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1
+    }
+
+    const deleteHandler = async () => {
+        await deleteHero(hero.id);
+        dispatch(getHeroes());
     }
 
     return (
@@ -36,6 +47,8 @@ const Hero = ({ hero }) => {
                     <li key={power.id}>{power.name}</li>
                 ))}
             </ul>
+
+            <button onClick={deleteHandler}>Delete superhero!</button>
         </article>
     );
 }
