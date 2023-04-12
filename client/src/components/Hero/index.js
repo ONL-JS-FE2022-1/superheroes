@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from './Hero.module.css';
-import { deleteHero } from '../../api';
+import { deleteHero, deletePower } from '../../api';
 import { getHeroes } from '../../redux/slices/heroSlice';
 import { useDispatch } from 'react-redux';
 
@@ -21,6 +21,11 @@ const Hero = ({ hero }) => {
 
     const deleteHandler = async () => {
         await deleteHero(hero.id);
+        dispatch(getHeroes());
+    }
+
+    const deletePowerHandler = async (powerId) => {
+        await deletePower(hero.id, powerId);
         dispatch(getHeroes());
     }
 
@@ -44,7 +49,16 @@ const Hero = ({ hero }) => {
             <p>Superpowers</p>
             <ul>
                 {hero.superPowers.map((power) => (
-                    <li key={power.id}>{power.name}</li>
+                    <table>
+                        <tr>
+                            <td>
+                                <li key={power.id}>{power.name}</li>
+                            </td>
+                            <td>
+                                <button onClick={() => deletePowerHandler(power.id)}>Delete power!</button>
+                            </td>
+                        </tr>
+                    </table>
                 ))}
             </ul>
 
