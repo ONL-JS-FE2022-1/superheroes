@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from './Hero.module.css';
-import { deleteHero, deletePower, addPower } from '../../api';
+import { deleteHero, deletePower, addPower, editHero } from '../../api';
 import { getHeroes } from '../../redux/slices/heroSlice';
 import { useDispatch } from 'react-redux';
 import Modal from 'react-modal';
@@ -11,6 +11,25 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 
 Modal.setAppElement('#root');
+
+const validationHeroSchema = yup.object().shape({
+    nickname: yup.string()
+        .trim()
+        .min(3, 'Nickname must be at least 3 characters')
+        .required('Nickname is required'),
+    realName: yup.string()
+        .trim()
+        .min(3, 'Real name must be at least 3 characters')
+        .required('Real name is required'),
+    catchPhrase: yup.string()
+        .trim()
+        .min(3, 'Catch phrase must be at least 3 characters')
+        .required('Catch phrase is required'),
+    originDescription: yup.string()
+        .trim()
+        .min(10, 'Origin description must be at least 10 characters')
+        .required('Origin description is required'),
+})
 
 const validationPowerSchema = yup.object().shape({
     powerName: yup.string()
@@ -23,6 +42,7 @@ const validationPowerSchema = yup.object().shape({
 const Hero = ({ hero }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalAddPowerOpen, setModalAddPowerOpen] = useState(false);
+    const [modalEditHeroOpen, setModalEditHeroOpen] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -46,7 +66,7 @@ const Hero = ({ hero }) => {
         setModalOpen(false);
     }
 
-    const handleAddPowerSubmit = async (values, {resetForm}) => {
+    const handleAddPowerSubmit = async (values, { resetForm }) => {
         try {
             await addPower(hero.id, [values.powerName]);
             dispatch(getHeroes());
@@ -90,6 +110,72 @@ const Hero = ({ hero }) => {
                 ))}
             </ul>
 
+            <button onClick={() => setModalEditHeroOpen(true)}>Edit superhero!</button>
+
+            {/* Модальне вікно для редагування супергероя */}
+            <Modal
+                isOpen={modalEditHeroOpen}
+                onRequestClose={() => setModalEditHeroOpen(false)}
+                contentLabel="Edit Hero Modal"
+                style={{
+                    content: {
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        marginRight: '-50%',
+                        transform: 'translate(-50%, -50%)',
+                    }
+                }}
+            >
+                <h2>Edit Hero</h2>
+                <Formik
+                    initialValues={{
+                        nickname: hero.nickname,
+                        realName: hero.realName,
+                        catchPhrase: hero.catchPhrase,
+                        originDescription: hero.originDescription
+                    }}
+                    validationSchema={validationHeroSchema}
+                    onSubmit={async (values) => {
+                        try {
+                            await editHero(hero.id, values);
+                            dispatch(getHeroes());
+                            setModalEditHeroOpen(false);
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }}
+                >
+                    {(props) => (
+                        <Form>
+                            <div>
+                                <label>Nickname</label>
+                                <Field name="nickname"></Field>
+                                <ErrorMessage name="nickname" component="div" />
+                            </div>
+                            <div>
+                                <label>Real Name</label>
+                                <Field name="realName"></Field>
+                                <ErrorMessage name="realName" component="div" />
+                            </div>
+                            <div>
+                                <label>Catch Phrase</label>
+                                <Field name="catchPhrase"></Field>
+                                <ErrorMessage name="catchPhrase" component="div" />
+                            </div>
+                            <div>
+                                <label>Origin Description</label>
+                                <Field name="originDescription"></Field>
+                                <ErrorMessage name="originDescription" component="div" />
+                            </div>
+                            <button type="submit">Save changes</button>
+                            <button type="button" onClick={() => { setModalEditHeroOpen(false) }}>Cancel</button>
+                        </Form>
+                    )}
+                </Formik>
+            </Modal>
+
             <button onClick={() => setModalOpen(true)}>Delete superhero!</button>
 
             {/* Модальне вікно для підтвердження видалення */}
@@ -117,7 +203,7 @@ const Hero = ({ hero }) => {
 
 
             {/* Додавання суперсили */}
-            <button onClick={() => {setModalAddPowerOpen(true)}}>Add superpower</button>
+            <button onClick={() => { setModalAddPowerOpen(true) }}>Add superpower</button>
 
             <Modal
                 isOpen={modalAddPowerOpen}
