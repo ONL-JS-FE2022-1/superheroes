@@ -39,7 +39,7 @@ const validationPowerSchema = yup.object().shape({
 })
 
 
-const Hero = ({ hero, currentPage }) => {
+const Hero = ({ hero, currentPage, setPageNumber }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalAddPowerOpen, setModalAddPowerOpen] = useState(false);
     const [modalEditHeroOpen, setModalEditHeroOpen] = useState(false);
@@ -150,6 +150,7 @@ const Hero = ({ hero, currentPage }) => {
                         try {
                             await editHero(hero.id, values);
                             dispatch(getHeroes());
+                            setPageNumber(0);
                             setModalEditHeroOpen(false);
                         } catch (error) {
                             console.error(error);

@@ -75,7 +75,7 @@ const HeroesPage = () => {
         hero.nickname.toLowerCase().includes(searchHero.toLowerCase())
     )
 
-    const heroesCards = filteredHeroes.map(hero => <Hero key={hero.id} hero={hero} currentPage={pageNumber} />)
+    const heroesCards = filteredHeroes.map(hero => <Hero key={hero.id} hero={hero} currentPage={pageNumber} setPageNumber={setPageNumber} />)
 
     return (
         <div>
@@ -110,6 +110,7 @@ const HeroesPage = () => {
                     try {
                         await addHero(values);
                         dispatch(getHeroes());
+                        setPageNumber(0);
                         setModalAddHeroOpen(false);
                         resetForm();
                     } catch (error) {
