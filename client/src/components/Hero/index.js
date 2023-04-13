@@ -63,7 +63,6 @@ const Hero = ({ hero }) => {
     const deletePowerHandler = async (powerId) => {
         await deletePower(hero.id, powerId);
         dispatch(getHeroes());
-        setModalOpen(false);
     }
 
     const handleAddPowerSubmit = async (values, { resetForm }) => {
