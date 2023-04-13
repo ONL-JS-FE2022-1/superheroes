@@ -1,14 +1,18 @@
 import {createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as API from '../../api';
+import CONSTANTS from '../../constants';
 
 const SLICE_NAME = 'heroes';
 
 const getHeroes = createAsyncThunk(
     `${SLICE_NAME}/getHeroes`,
-    async (param, thunkAPI) => {
+    async (pageNumber = 0, thunkAPI) => {
         try {
-            const {data: {data: superheroes}} = await API.getHeroes();
-            return superheroes;
+            const limit = CONSTANTS.itemsPerPage;
+            const offset = pageNumber * limit;
+            const {data: {data: superheroes, totalHeroesCount}} = await API.getHeroes(limit, offset);
+            
+            return {superheroes, totalHeroesCount};
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data)
         }
@@ -18,7 +22,8 @@ const getHeroes = createAsyncThunk(
 const initialState = {
     heroes: [],
     isLoading: false,
-    error: null 
+    error: null,
+    totalHeroesCount: 0 
 }
 
 const heroSlice = createSlice({
@@ -32,7 +37,8 @@ const heroSlice = createSlice({
 
         builder.addCase(getHeroes.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.heroes = action.payload;
+            state.heroes = action.payload.superheroes;
+            state.totalHeroesCount = action.payload.totalHeroesCount;
         });
 
         builder.addCase(getHeroes.rejected, (state, action) => {

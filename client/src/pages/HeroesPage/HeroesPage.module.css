@@ -2,3 +2,7 @@ body {
     overflow-x: hidden;
     background-color: lightblue;
 }
+
+button {
+    margin: 10px
+}

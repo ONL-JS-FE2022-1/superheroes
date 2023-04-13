@@ -7,6 +7,7 @@ import Modal from 'react-modal';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import { addHero } from '../../api';
+import CONSTANTS from '../../constants';
 
 Modal.setAppElement('#root');
 
@@ -30,14 +31,37 @@ const validationHeroSchema = yup.object().shape({
 })
 
 const HeroesPage = () => {
-    const { heroes, isLoading, error } = useSelector((state) => state.heroes);
+    const { heroes, totalHeroesCount, isLoading, error } = useSelector((state) => state.heroes);
     const dispatch = useDispatch();
     const [searchHero, setSearchHero] = useState('');
     const [modalAddHeroOpen, setModalAddHeroOpen] = useState(false);
+    const [pageNumber, setPageNumber] = useState(0);
+    const [maxPageNumber, setMaxPageNumber] = useState(0);
+    const [prevButtonDisabled, setPrevButtonDisabled] = useState(true);
+    const [nextButtonDisabled, setNextButtonDisabled] = useState(true);
 
     useEffect(() => {
-        dispatch(getHeroes());
-    }, [])
+        setPrevButtonDisabled(pageNumber === 0);
+        setNextButtonDisabled(pageNumber === maxPageNumber - 1);
+    }, [pageNumber, maxPageNumber])
+
+    useEffect(() => {
+        setMaxPageNumber(Math.ceil(totalHeroesCount / CONSTANTS.itemsPerPage));
+        dispatch(getHeroes(pageNumber));
+    }, [pageNumber, totalHeroesCount])
+
+    const nextPage = () => {
+        if(pageNumber < maxPageNumber - 1) {
+            setPageNumber(pageNumber + 1);
+        }
+        setPageNumber(pageNumber + 1);
+    }
+
+    const prevPage = () => {
+        if(pageNumber > 0) {
+            setPageNumber(pageNumber - 1);
+        }
+    }
 
     if (isLoading) {
         return <div>LOADING</div>;
@@ -51,7 +75,7 @@ const HeroesPage = () => {
         hero.nickname.toLowerCase().includes(searchHero.toLowerCase())
     )
 
-    const heroesCards = filteredHeroes.map(hero => <Hero key={hero.id} hero={hero} />)
+    const heroesCards = filteredHeroes.map(hero => <Hero key={hero.id} hero={hero} currentPage={pageNumber} />)
 
     return (
         <div>
@@ -129,6 +153,12 @@ const HeroesPage = () => {
                 placeholder="Search by hero nickname"
             />
             {heroesCards}
+            <div>
+                <button onClick={prevPage} disabled={prevButtonDisabled}>Go to previous page</button>
+                <button onClick={nextPage} disabled={nextButtonDisabled}>Go to next page</button>
+                <p>You are on the page: {pageNumber + 1}</p>
+                <p>Total number of pages: {maxPageNumber}</p>
+            </div>
         </div>
     );
 }
