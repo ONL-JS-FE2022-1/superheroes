@@ -43,6 +43,7 @@ const Hero = ({ hero }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalAddPowerOpen, setModalAddPowerOpen] = useState(false);
     const [modalEditHeroOpen, setModalEditHeroOpen] = useState(false);
+    const [modalAddImageOpen, setModalAddImageOpen] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -236,6 +237,79 @@ const Hero = ({ hero }) => {
 
                             <button type="submit">Add</button>
                             <button type="button" onClick={() => setModalAddPowerOpen(false)}>Cancel</button>
+                        </Form>
+                    )}
+                </Formik>
+            </Modal>
+
+            <button onClick={() => setModalAddImageOpen(true)}>Add image(s)</button>
+
+            {/* Модальне вікно для додавання зображень */}
+            <Modal
+                isOpen={modalAddImageOpen}
+                onRequestClose={() => setModalAddImageOpen(false)}
+                contentLabel="Add Image Modal"
+                style={{
+                    content: {
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        marginRight: '-50%',
+                        transform: 'translate(-50%, -50%)',
+                    }
+                }}
+            >
+                <h2>Add Image</h2>
+                <Formik
+                    initialValues={{ images: [] }}
+                    onSubmit={async (values, { setSubmitting }) => {
+                        const formData = new FormData();
+                        values.images.forEach((file) => {
+                            formData.append("images", file);
+                        });
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/superheroes/${hero.id}/images`, {
+                                method: 'POST',
+                                body: formData
+                            })
+                            if (response.ok) {
+                                console.log('Image uploaded successfully');
+                                dispatch(getHeroes());
+                            } else {
+                                console.error('Failed to upload image');
+                            }
+                        } catch (error) {
+                            console.error(error);
+                        } finally {
+                            setSubmitting(false);
+                        }
+                    }}
+                >
+                    {({ setFieldValue, isSubmitting }) => (
+                        <Form>
+                            <div>
+                                <label>Images: </label>
+                                <input
+                                    type="file"
+                                    id="images"
+                                    name="images"
+                                    multiple
+                                    accept="image/*"
+                                    onChange={(event) => {
+                                        const files = [...event.target.files];
+                                        if (files.length > 10) {
+                                            alert('You can select up to 10 images.');
+                                            setFieldValue("images", []);
+                                        } else {
+                                            setFieldValue("images", files);
+                                        }
+                                    }}
+                                />
+                                <ErrorMessage name="images" component="div" />
+                            </div>
+                            <button type="submit" disabled={isSubmitting}>Upload image(s)</button>
+                            <button type="button" onClick={() => setModalAddImageOpen(false)}>Cancel</button>
                         </Form>
                     )}
                 </Formik>
