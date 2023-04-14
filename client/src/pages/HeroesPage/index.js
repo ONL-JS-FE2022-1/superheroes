@@ -30,27 +30,25 @@ const validationHeroSchema = yup.object().shape({
 })
 
 const HeroesPage = () => {
-    const { heroes, totalHeroesCount, isLoading, error } = useSelector((state) => state.heroes);
+    const { heroes, totalHeroesCount, lastPageNumber, isLoading, error } = useSelector((state) => state.heroes);
     const dispatch = useDispatch();
     const [searchHero, setSearchHero] = useState('');
     const [modalAddHeroOpen, setModalAddHeroOpen] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
-    const [maxPageNumber, setMaxPageNumber] = useState(0);
     const [prevButtonDisabled, setPrevButtonDisabled] = useState(true);
     const [nextButtonDisabled, setNextButtonDisabled] = useState(true);
 
     useEffect(() => {
         setPrevButtonDisabled(pageNumber === 0);
-        setNextButtonDisabled(pageNumber === maxPageNumber - 1);
-    }, [pageNumber, maxPageNumber])
+        setNextButtonDisabled(pageNumber === lastPageNumber - 1);
+    }, [pageNumber, lastPageNumber])
 
     useEffect(() => {
-        setMaxPageNumber(Math.ceil(totalHeroesCount / CONSTANTS.itemsPerPage));
         dispatch(getHeroes(pageNumber));
     }, [pageNumber, totalHeroesCount])
 
     const nextPage = () => {
-        if(pageNumber < maxPageNumber - 1) {
+        if(pageNumber < lastPageNumber - 1) {
             setPageNumber(pageNumber + 1);
         }
         setPageNumber(pageNumber + 1);
@@ -157,7 +155,7 @@ const HeroesPage = () => {
                 <button onClick={prevPage} disabled={prevButtonDisabled}>Go to previous page</button>
                 <button onClick={nextPage} disabled={nextButtonDisabled}>Go to next page</button>
                 <p>You are on the page: {pageNumber + 1}</p>
-                <p>Total number of pages: {maxPageNumber}</p>
+                <p>Total number of pages: {lastPageNumber}</p>
             </div>
         </div>
     );
