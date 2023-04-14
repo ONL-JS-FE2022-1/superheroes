@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Hero from '../../components/Hero';
-import { getHeroes } from '../../redux/slices/heroSlice';
+import { getHeroes, addHero } from '../../redux/slices/heroSlice';
 import styles from './HeroesPage.module.css';
 import Modal from 'react-modal';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
-import { addHero } from '../../api';
 import CONSTANTS from '../../constants';
 
 Modal.setAppElement('#root');
@@ -108,8 +107,8 @@ const HeroesPage = () => {
                 validationSchema={validationHeroSchema} 
                 onSubmit={async (values, {resetForm}) => {
                     try {
-                        await addHero(values);
-                        dispatch(getHeroes());
+                        await dispatch(addHero(values));
+                        dispatch(getHeroes(0));
                         setPageNumber(0);
                         setModalAddHeroOpen(false);
                         resetForm();
