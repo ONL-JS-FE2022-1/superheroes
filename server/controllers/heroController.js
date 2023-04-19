@@ -1,5 +1,6 @@
 const {Superhero, SuperPower, Image} = require('../models');
 const createHttpError = require('http-errors');
+const { deleteImage } = require('../utils');
 
 module.exports.createHero = async (req, res, next) => {
     try {
@@ -174,18 +175,47 @@ module.exports.updateHeroById = async(req, res, next) => {
     }
 }
 
-module.exports.deleteHeroById = async(req, res, next) => {
+module.exports.deleteHeroById = async (req, res, next) => {
     try {
-        const {params: {id}} = req;
+        const {
+            params: { id },
+        } = req;
 
-        const count = await Superhero.destroy({where: {id}});
+        // Находим героя и все его связанные данные (картинки и суперсилы)
+        const hero = await Superhero.findByPk(id, {
+            include: [
+                {
+                    model: SuperPower,
+                    attributes: ['id', 'name'],
+                    as: 'superPowers',
+                },
+                {
+                    model: Image,
+                    attributes: ['id', 'path'],
+                    as: 'images',
+                },
+            ],
+        });
 
-        if(count === 0) {
+        // Если герой не найден, кидаем 404
+        if (!hero) {
             return next(createHttpError(404));
         }
 
-        res.status(200).end();
+        // Удаляем картинки героя с сервера
+        if (hero.images.length) {
+            for (let i = 0; i < hero.images.length; i++) {
+                const imagePath = hero.images[i].path;
+                await deleteImage(imagePath);
+            }
+        }
+
+        // Удаляем героя из базы данных
+        await hero.destroy();
+
+        res.status(204).send({ data: hero });
+
     } catch (err) {
         next(err);
     }
-}
+};
