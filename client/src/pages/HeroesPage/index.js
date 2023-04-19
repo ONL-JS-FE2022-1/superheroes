@@ -41,7 +41,7 @@ const HeroesPage = () => {
 
     useEffect(() => {
         setPrevButtonDisabled(pageNumber === 0);
-        setNextButtonDisabled(pageNumber === lastPageNumber - 1);
+        setNextButtonDisabled(pageNumber === lastPageNumber - 1 || totalHeroesCount === 0);
     }, [pageNumber, lastPageNumber])
 
     useEffect(() => {
@@ -71,10 +71,6 @@ const HeroesPage = () => {
         loading={isLoading}
         size={250}
       />;
-    }
-
-    if (error) {
-        return <div>ERROR</div>;
     }
 
     const filteredHeroes = heroes.filter((hero) =>
@@ -159,7 +155,7 @@ const HeroesPage = () => {
                 onChange={({ target: { value } }) => setSearchHero(value)}
                 placeholder="Search by hero nickname"
             />
-            {heroesCards}
+            {heroesCards && <h2>There are no superheroes. Add them</h2>}
             <div>
                 <button onClick={prevPage} disabled={prevButtonDisabled}>Go to previous page</button>
                 <button onClick={nextPage} disabled={nextButtonDisabled}>Go to next page</button>

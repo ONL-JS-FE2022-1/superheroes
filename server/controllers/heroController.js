@@ -77,10 +77,6 @@ module.exports.getHeroes = async(req, res, next) => {
             ...pagination
         })
 
-        if(!heroes.length) {
-            return next(createHttpError(404));
-        }
-
         const totalHeroesCount = await Superhero.count();
 
         res.send({data: heroes, totalHeroesCount});
