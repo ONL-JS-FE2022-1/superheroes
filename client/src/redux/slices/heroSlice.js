@@ -95,7 +95,7 @@ const addHero = createAsyncThunk(
     `${SLICE_NAME}/addHero`,
     async(hero, thunkAPI) => {
         try {
-            API.addHero(hero);
+            await API.addHero(hero);
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
