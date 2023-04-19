@@ -155,7 +155,7 @@ const HeroesPage = () => {
                 onChange={({ target: { value } }) => setSearchHero(value)}
                 placeholder="Search by hero nickname"
             />
-            {heroesCards && <h2>There are no superheroes. Add them</h2>}
+            {heroesCards.length > 0 ? heroesCards : <h2>There are no superheroes. Add them</h2>}
             <div>
                 <button onClick={prevPage} disabled={prevButtonDisabled}>Go to previous page</button>
                 <button onClick={nextPage} disabled={nextButtonDisabled}>Go to next page</button>
