@@ -18,3 +18,5 @@ export const addHero = async (hero) => await httpClient.post('/superheroes', her
 
 export const deleteImage = async (heroId, imageId) =>
 await httpClient.delete(`/superheroes/${heroId}/images/${imageId}`);
+
+export const createRandomHero = async () => await httpClient.post('/superheroes/random');

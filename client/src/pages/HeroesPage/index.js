@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Hero from '../../components/Hero';
-import { getHeroes, addHero } from '../../redux/slices/heroSlice';
+import { getHeroes, addHero, createRandomHero } from '../../redux/slices/heroSlice';
 import styles from './HeroesPage.module.css';
 import Modal from 'react-modal';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -82,6 +82,10 @@ const HeroesPage = () => {
     return (
         <div>
             <button onClick={() => setModalAddHeroOpen(true)}>Add hero</button>
+            <button onClick={async () => {
+                await dispatch(createRandomHero());
+                dispatch(getHeroes());
+            }}>Create random hero!</button>
 
             <Modal
             isOpen={modalAddHeroOpen}
