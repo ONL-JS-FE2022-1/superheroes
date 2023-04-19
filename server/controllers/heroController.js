@@ -1,6 +1,6 @@
 const {Superhero, SuperPower, Image} = require('../models');
 const createHttpError = require('http-errors');
-const { deleteImage } = require('../utils');
+const { deleteImage, generateRandomHero } = require('../utils');
 
 module.exports.createHero = async (req, res, next) => {
     try {
@@ -53,6 +53,55 @@ module.exports.createHero = async (req, res, next) => {
         })
 
         res.status(201).send({data: heroWithData});
+    } catch (err) {
+        next(err);
+    }
+}
+
+module.exports.createRandomHero = async (req, res, next) => {
+    try {
+        const heroData = await generateRandomHero(); // получаем объект героя из generateRandomHero()
+
+        // создаем супергероя
+        const hero = await Superhero.create({
+            nickname: heroData.nickname,
+            realName: heroData.realName,
+            originDescription: heroData.originDescription,
+            catchPhrase: heroData.catchPhrase,
+        });
+
+        // создаем суперсилы для героя
+        const powers = heroData.superPowers.map(power => ({
+            name: power,
+            heroId: hero.id,
+        }));
+        await SuperPower.bulkCreate(powers, { returning: true });
+
+        // создаем картинки для героя
+        const images = heroData.images.map(imagePath => ({
+            path: imagePath,
+            heroId: hero.id,
+        }));
+        await Image.bulkCreate(images, { returning: true });
+
+        // находим созданного супергероя и связанные с ним данные
+        const heroWithData = await Superhero.findByPk(hero.id, {
+            include: [
+                {
+                    model: SuperPower,
+                    attributes: ['id', 'name'],
+                    as: 'superPowers',
+                },
+                {
+                    model: Image,
+                    attributes: ['id', 'path'],
+                    as: 'images',
+                },
+            ],
+        });
+
+        // отправляем созданного супергероя и связанные с ним данные в ответе
+        res.status(201).send({ data: heroWithData });
     } catch (err) {
         next(err);
     }

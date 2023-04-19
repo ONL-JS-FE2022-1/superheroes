@@ -1,0 +1,2 @@
+POST http://localhost:5000/api/superheroes/random HTTP/1.1
+Content-Type: application/json

@@ -11,6 +11,10 @@ heroRouter
 .post(uploadImages, HeroController.createHero);
 
 heroRouter
+.route('/random')
+.post(HeroController.createRandomHero);
+
+heroRouter
 .route('/:id')
 .get(HeroController.getHeroById)
 .put(uploadImages, HeroController.updateHeroById)
